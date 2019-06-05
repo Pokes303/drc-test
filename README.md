@@ -14,3 +14,4 @@ A WiiU homebrew/app for testing the DRC and read/write some hidden values
 ·Vibration
 ·Gamepad Sensor Bar
 ·Gamepad BASE
+a
