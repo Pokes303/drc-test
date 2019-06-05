@@ -6,26 +6,13 @@ BASEDIR	:= $(dir $(firstword $(MAKEFILE_LIST)))
 VPATH	:= $(BASEDIR)
 
 #---------------------------------------------------------------------------------
-# additional libraries
-#---------------------------------------------------------------------------------
-#GET			:=	./libs/get/src
-#RAPIDJSON	:=	./libs/get/src/libs/rapidjson/include
-#MINIZIP		:=	./libs/get/src/libs/minizip
-#TINYXML 	:=	libs/get/src/libs/tinyxml
-
-#---------------------------------------------------------------------------------
 # TARGET is the name of the output
 # BUILD is the directory where object files & intermediate files will be placed
 # SOURCES is a list of directories containing source code
 # INCLUDES is a list of directories containing header files
-# ROMFS is a directory that will be available as romfs:/
 #---------------------------------------------------------------------------------
 TARGET		:=	drctest
-BUILD		:=	build
 SOURCES		:=	src
-#. $(GET) console gui
-INCLUDES	:=	include
-#ROMFS		:=	romfs
 
 #---------------------------------------------------------------------------------
 # options for code generation
@@ -38,25 +25,12 @@ CXXFLAGS	+=	-O2 -DUSE_FILE32API -DNOCRYPT -DINPUT_JOYSTICK -DMUSIC -D_XOPEN_SOUR
 #---------------------------------------------------------------------------------
 PKGCONF			:=	$(DEVKITPRO)/portlibs/ppc/bin/powerpc-eabi-pkg-config
 PKGCONF_WIIU	:=	$(DEVKITPRO)/portlibs/wiiu/bin/powerpc-eabi-pkg-config
-#CFLAGS			+=	`$(PKGCONF_WIIU) --cflags sdl2 SDL2_gfx SDL2_image SDL2_mixer SDL2_ttf`
-#CXXFLAGS		+=	`$(PKGCONF_WIIU) --cflags sdl2 SDL2_gfx SDL2_image SDL2_mixer SDL2_ttf`
-#LDFLAGS			+=	`$(PKGCONF_WIIU) --libs sdl2 SDL2_gfx SDL2_image SDL2_mixer SDL2_ttf` \
-#					`$(PKGCONF) --libs freetype2 libpng libmpg123 vorbisidec libjpeg zlib libpng`
 
 #---------------------------------------------------------------------------------
 # wut libraries
 #---------------------------------------------------------------------------------
 LDFLAGS		+=	$(WUT_NEWLIB_LDFLAGS) $(WUT_STDCPP_LDFLAGS) $(WUT_DEVOPTAB_LDFLAGS) \
 				-lcoreinit -lvpad -lsysapp -lwhb -lproc_ui\
-
-#---------------------------------------------------------------------------------
-# romfs
-#---------------------------------------------------------------------------------
-#include $(DEVKITPRO)/portlibs/wiiu/share/romfs-wiiu.mk
-#CFLAGS		+=	$(ROMFS_CFLAGS)
-#CXXFLAGS	+=	$(ROMFS_CFLAGS)
-#LDFLAGS		+=	$(ROMFS_LDFLAGS)
-#OBJECTS		+=	$(ROMFS_TARGET)
 
 #---------------------------------------------------------------------------------
 # includes
