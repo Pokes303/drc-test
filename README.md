@@ -26,6 +26,6 @@ Put the SD Card on your WiiU and install the contents with WUP Installer GX2
 ## Compiling
 On Linux or WSL, download and install devkitPro's wut package: [https://github.com/devkitPro/wut] and follow the initial instructions for compiling projects, then clone the repository, unzip the files and write on the command line:
 ```
-cd drctest-master
+cd drc-test-master
 make
 ```
