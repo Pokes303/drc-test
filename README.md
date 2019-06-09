@@ -17,7 +17,12 @@ A WiiU homebrew/app for testing the DRC and read/write some hidden values
 
 ## Usage
 ### HBL Version
-Take the contents of drc-test-hbl.zip on releases tab and place them on your WiiU SD Card at sd:/wiiu/apps/drc-test
+Take the contents of <drctest hbl.zip> here: (<drctest latest release>)[https://github.com/Pokes303/drc-test/releases/latest] and place them on your WiiU SD Card at sd:/wiiu/apps/
+
+### Channel Version
+Take the contents of <drctest channel.zip> here: (<drctest latest release>)[https://github.com/Pokes303/drc-test/releases/latest], then move the folder <drctest channel> to sd:/install/
+Put the SD Card on your WiiU and install the contents with WUP Installer GX2
+
 ## Compiling
 On Linux or WSL, download and install (devkitPro's wut package)[https://github.com/devkitPro/wut], then clone the repository, unzip the files, and write on the command line:
 ```
