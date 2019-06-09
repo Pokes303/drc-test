@@ -8,6 +8,7 @@
 #include <coreinit/screen.h>
 #include <coreinit/cache.h>
 #include <coreinit/dynload.h>
+#include <coreinit/title.h>
 #include <vpad/input.h>
 
 #include <whb/proc.h>
@@ -32,7 +33,7 @@ VPADReadError vError;
 
 uint8_t menu = 0;
 
-#define OPTIONS_MAX 14
+#define OPTIONS_MAX 13
 uint8_t menuIndex = 0;
 static const char* indexOptions[]{
 	"Buttons and Joysticks",
@@ -50,8 +51,7 @@ static const char* indexOptions[]{
 	"Gamepad sensor bar",
 	//Infrared ? [dc.rpl]
 	"Gamepad BASE (Unused/Unknown)",
-	"Credits",
-	"Exit"
+	"Credits"
 };
 
 void endRefresh() {
@@ -110,7 +110,7 @@ bool menuCredits() {
 			continue;
 		
 		write(0, 4, "drc-test homebrew/app made by Pokes303");
-		write(0, 5, "See the github repo: \"https://github.com/Pokes303/drc-test\"");
+		write(0, 5, "See the github repo: <https://github.com/Pokes303/drc-test>");
 	
 		write(0, 7, "Thanks to WiiUBrew.org by all of the info of the Dynamic Libs");
 	
@@ -441,9 +441,9 @@ bool menuDrcBase() {
 						swrite(1, 11, std::string("Volume: ") + hex_tostring(volume, 2));
 						
 						if ((vpad.trigger & VPAD_BUTTON_RIGHT || vpad.hold & VPAD_STICK_L_EMULATION_RIGHT))
-							option2 ? volume++ : enabled++;
+							!option2 ? volume++ : enabled++;
 						else if ((vpad.trigger & VPAD_BUTTON_LEFT || vpad.hold & VPAD_STICK_L_EMULATION_LEFT))
-							option2 ? volume-- : enabled-- ;
+							!option2 ? volume-- : enabled-- ;
 						
 						write(0, 10 + option2, ">");
 						
@@ -2116,8 +2116,6 @@ int main() {
 			if (!menuCredits()) 
 				goto exit;
 			goto endMenu;
-		case 14: //EXIT
-			goto exit;
 		}
 		
 		write(39, 17, "Press HOME to exit anytime");
