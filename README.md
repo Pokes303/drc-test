@@ -1,5 +1,5 @@
 # drc-test
-A WiiU homebrew/app for testing the DRC and read/write some hidden values
+A WiiU homebrew/app to test the DRC and read/write some hidden values
 
 ## Features for testing
 - Buttons/Joysticks
