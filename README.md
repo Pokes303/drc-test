@@ -24,7 +24,7 @@ Take the contents of `<drctest channel.zip>` here: [https://github.com/Pokes303/
 Put the SD Card on your WiiU and install the contents with WUP Installer GX2
 
 ## Compiling
-On Linux or WSL, download and install devkitPro's wut package: [https://github.com/devkitPro/wut] and follow the initial instructions for compiling projects, then clone the repository, unzip the files and write on the command line:
+On Linux or WSL, download and install devkitPro's wut package: [https://github.com/devkitPro/wut] and follow the initial instructions for compiling projects (No extra libraries are needed), then clone the repository, unzip the files and write on the command line:
 ```
 cd drc-test-master
 make
