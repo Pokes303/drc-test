@@ -4,7 +4,7 @@
 #include <stdio.h> //sprintf()
 #include <string> //std::string
 #include <vector> //std::vector
-
+//
 #include <coreinit/screen.h>
 #include <coreinit/cache.h>
 #include <coreinit/dynload.h>
@@ -112,9 +112,9 @@ bool menuCredits() {
 		write(0, 4, "drc-test homebrew/app made by Pokes303");
 		write(0, 5, "See the github repo: <https://github.com/Pokes303/drc-test>");
 	
-		write(0, 7, "Thanks to WiiUBrew.org by all of the info of the Dynamic Libs");
+		write(0, 7, "Thanks to WiiUBrew.org by all of the info of the WiiU Dynamic Libs");
 	
-		write(0, 9, "Version 1.0");
+		write(0, 9, "Version 1.2");
 	
 		if (checkReturn())
 			return true;
@@ -403,7 +403,6 @@ bool menuDrcBase() {
 					char enabled = 0;
 					char volume = 0;
 					
-					bool option1 = false;
 					while(WHBProcIsRunning()) {
 						if (!startRefresh())
 							continue;
@@ -587,7 +586,7 @@ bool menuSensorBar() {
 
 static const char* vibrationOptions[]{
 	"Edit motor pattern",
-	"Edit motor lenght",
+	"Edit motor length",
 	"Start motor with provided params",
 	"Start motor with example params",
 	"Stop motor"
@@ -595,10 +594,9 @@ static const char* vibrationOptions[]{
 bool menuVibration() {
 	uint8_t vibrationIndex = 0;
 	
-	uint32_t motorResult = 99;
 	std::vector<uint8_t> pattern;
 	pattern.push_back(0xFF);
-	uint32_t lenght = 0;
+	uint8_t length = 0;
 	
 	int result = 999;
 	while(WHBProcIsRunning()) {
@@ -606,8 +604,8 @@ bool menuVibration() {
 			continue;
 		
 		write(0, 4, "Current params: (They stay until you return to main menu)");
-		swrite(2, 5, std::string("+Pattern (Array size): ") + hex_tostring(pattern.size(), 8));
-		swrite(2, 6, std::string("+Length: ") + std::to_string(lenght));
+		swrite(2, 5, std::string("+Pattern (Array size): ") + hex_tostring(pattern.size(), 2));
+		swrite(2, 6, std::string("+Length: ") + std::to_string(length));
 							
 		for (int i = 0; i < 5; i++) {
 			if (i == vibrationIndex)
@@ -676,7 +674,7 @@ bool menuVibration() {
 						}
 					
 						write(0, 8, "_______________________________________________________________");
-						swrite(0, 10, std::string("Pattern array size: ") + hex_tostring(pattern.size()) + std::string("   (Max: ") + hex_tostring(pattern.max_size()) + std::string(")"));
+						swrite(0, 10, "Pattern array size: " + hex_tostring(pattern.size()) + "   (Max: 0xFF)");
 						
 						write(0, 12, "Press A to modify selected element (Between 0x00 and 0xFF)");
 						write(0, 13, "Press DPAD to move around elements");
@@ -702,7 +700,7 @@ bool menuVibration() {
 							initialF = !initialF;
 							break;
 						case VPAD_BUTTON_PLUS:
-							if (pattern.size() < pattern.max_size())
+							if (pattern.size() < 0xFF)
 								pattern.push_back((initialF) ? 0xFF : 0x00);
 							pages = (pattern.size() - 1) / 16;
 							break;
@@ -753,7 +751,7 @@ bool menuVibration() {
 					}
 					return false;
 				}
-				case 1: //MOTOR LENGHT EDIT
+				case 1: //MOTOR length EDIT
 					while(WHBProcIsRunning()) {
 						if (!startRefresh())
 							continue;
@@ -762,16 +760,25 @@ bool menuVibration() {
 						
 						write(0, 5, "Change number fast using L Stick LEFT and RIGHT");
 						write(0, 6, "Change one-by-one number using LEFT and RIGHT on DPAD");
+						write(0, 7, "+length can be 120 or less");
 						
-						swrite(0, 8, std::string(">Lenght: ") + std::to_string(lenght));
-						swrite(15, 8, std::string("(") + hex_tostring(lenght, 2) + std::string(")"));
+						swrite(0, 9, std::string(">length: ") + std::to_string(length));
+						swrite(15, 9, std::string("(") + hex_tostring(length, 2) + std::string(")"));
 						
-						swrite(0, 10, std::string("Pattern array size: ") + hex_tostring(pattern.size(), 8));
+						swrite(0, 11, std::string("Pattern array size: ") + hex_tostring(pattern.size(), 8));
 						
-						if ((vpad.trigger & VPAD_BUTTON_RIGHT || vpad.hold & VPAD_STICK_L_EMULATION_RIGHT))
-							lenght++;
-						else if ((vpad.trigger & VPAD_BUTTON_LEFT || vpad.hold & VPAD_STICK_L_EMULATION_LEFT))
-							lenght--;
+						if ((vpad.trigger & VPAD_BUTTON_RIGHT || vpad.hold & VPAD_STICK_L_EMULATION_RIGHT)) {
+							if (length >= 120)
+								length = 0;
+							else
+								length++;
+						}
+						else if ((vpad.trigger & VPAD_BUTTON_LEFT || vpad.hold & VPAD_STICK_L_EMULATION_LEFT)) {
+							if (length <= 0)
+								length = 120;
+							else
+								length--;
+						}
 						
 						if (checkReturn())
 							goto loopMenuVibration;
@@ -781,7 +788,7 @@ bool menuVibration() {
 					return false;
 					break;
 				case 2: //START MOTOR W/CUSTOM
-					result = VPADControlMotor(VPAD_CHAN_0, pattern.data(), lenght);
+					result = VPADControlMotor(VPAD_CHAN_0, pattern.data(), length);
 					break;
 				case 3: { //START MOTOR W/EXAMPLE
 					VPADStopMotor(VPAD_CHAN_0);
@@ -2041,6 +2048,8 @@ int main() {
 			case VPAD_BUTTON_A:
 				menu = menuIndex + 1;
 				goto refreshBuffs;
+			case VPAD_BUTTON_B:
+				goto exit;
 			case VPAD_BUTTON_UP:
 			case VPAD_STICK_L_EMULATION_UP:
 				if (menuIndex > 0)
@@ -2118,6 +2127,7 @@ int main() {
 			goto endMenu;
 		}
 		
+		write(50, 17, "Press B to exit");
 		write(39, 17, "Press HOME to exit anytime");
 
 		endMenu:
