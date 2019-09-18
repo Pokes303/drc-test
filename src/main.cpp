@@ -108,14 +108,14 @@ bool menuCredits() {
 	while(WHBProcIsRunning()) {
 		if (!startRefresh())
 			continue;
-		
+
 		write(0, 4, "drc-test homebrew/app made by Pokes303");
 		write(0, 5, "See the github repo: <https://github.com/Pokes303/drc-test>");
-	
+
 		write(0, 7, "Thanks to WiiUBrew.org by all of the info of the WiiU Dynamic Libs");
-	
+
 		write(0, 9, "Version 1.2");
-	
+
 		if (checkReturn())
 			return true;
 
@@ -145,95 +145,95 @@ void writeDrcBaseInfo(uint8_t _index, uint32_t _channel) {
 	swrite(0, 4, std::string("--->") + std::string(baseOptions[_index]));
 }
 bool menuDrcBase() {
-	
+
 	OSDynLoad_Acquire("vpadbase.rpl", &base_handle);
 	void* handle;
-	
+
 	char (*VPADBASEIsInit)();
 	OSDynLoad_FindExport(base_handle, 0, "VPADBASEIsInit", &handle);
 	VPADBASEIsInit = (char(*)())handle;
-	
+
 	int (*VPADBASEGetState)(int channel);
 	OSDynLoad_FindExport(base_handle, 0, "VPADBASEGetState", &handle);
 	VPADBASEGetState = (int(*)(int channel))handle;
-	
+
 	void (*VPADBASEGetCalibrationData)(char buffer[0x44], int channel);
 	OSDynLoad_FindExport(base_handle, 0, "VPADBASEGetCalibrationData", &handle);
 	VPADBASEGetCalibrationData = (void(*)(char buffer[0x44], int channel))handle;
-	
+
 	void (*VPADBASEGetGameControllerMode)(int channel, uint32_t* mode);
 	OSDynLoad_FindExport(base_handle, 0, "VPADBASEGetGameControllerMode", &handle);
 	VPADBASEGetGameControllerMode = (void(*)(int channel, uint32_t* mode))handle;
-	
+
 	void (*VPADBASESetGameControllerMode)(int channel, int mode);
 	OSDynLoad_FindExport(base_handle, 0, "VPADBASESetGameControllerMode", &handle);
 	VPADBASESetGameControllerMode = (void(*)(int channel, int mode))handle;
-	
+
 	void (*VPADBASEGetFactorySetting)(char buffer[0x1C], int channel);
 	OSDynLoad_FindExport(base_handle, 0, "VPADBASEGetFactorySetting", &handle);
 	VPADBASEGetFactorySetting = (void(*)(char buffer[0x1C], int channel))handle;
-	
+
 	void (*VPADBASEGetVolumeOverrideSetting)(int channel, char* enabled, char* volume);
 	OSDynLoad_FindExport(base_handle, 0, "VPADBASEGetVolumeOverrideSetting", &handle);
 	VPADBASEGetVolumeOverrideSetting = (void(*)(int channel, char* enabled, char* volume))handle;
-	
+
 	void (*VPADBASESetVolumeOverrideSetting)(int channel, char enabled, char volume);
 	OSDynLoad_FindExport(base_handle, 0, "VPADBASESetVolumeOverrideSetting", &handle);
 	VPADBASESetVolumeOverrideSetting = (void(*)(int channel, char enabled, char volume))handle;
-	
+
 	void (*VPADBASEInitVolumeOverrideSettingSyncTime)(int channel);
 	OSDynLoad_FindExport(base_handle, 0, "VPADBASEInitVolumeOverrideSettingSyncTime", &handle);
 	VPADBASEInitVolumeOverrideSettingSyncTime = (void(*)(int channel))handle;
-	
+
 	char (*VPADBASEGetVolumeOverrideStatus)(int channel);
 	OSDynLoad_FindExport(base_handle, 0, "VPADBASEGetVolumeOverrideStatus", &handle);
 	VPADBASEGetVolumeOverrideStatus = (char(*)(int channel))handle;
-	
+
 	int (*VPADBASEGetHeadphoneStatus)(int channel);
 	OSDynLoad_FindExport(base_handle, 0, "VPADBASEGetHeadphoneStatus", &handle);
 	VPADBASEGetHeadphoneStatus = (int(*)(int channel))handle;
-	
+
 	//Thanks to https://wiiubrew.org/wiki/Vpadbase.rpl
-	
+
 	uint8_t baseIndex = 0;
 	uint32_t channel = 0;
-	
+
 	warningDrcMenu:
 	while(WHBProcIsRunning()) {
 		if (!startRefresh())
 			continue;
-		
+
 		write(0, 4, "-= WARNING! =-");
 		write(0, 5, "You are going to get/set some unknown values from GAMEPAD BASE,");
 		write(0, 6, "which has not be used never officially.");
 		write(0, 8, "There is not suposed to be any problem like bricking, but be");
 		write(0, 9, "careful. Use it at your own risk!");
 		write(0, 11, "Press A to continue");
-		
+
 		if (vpad.trigger & VPAD_BUTTON_A)
 			goto mainDrcMenu;
-	
+
 		if (checkReturn())
 			return true;
 
 		endRefresh();
 	}
 	return false;
-	
+
 	mainDrcMenu:
 	while(WHBProcIsRunning()) {
 		if (!startRefresh())
 			continue;
-		
+
 		for (int i = 0; i < 12; i++) {
 			if (i == baseIndex)
 				write(0, i + 4, ">");
 			write(1, i + 4, baseOptions[i]);
 		}
 		swrite(22, 4, std::string("(Current: ") + hex_tostring(channel, 8) + std::string(")"));
-		
+
 		write(0, 17, "Press Y to see the warning");
-		
+
 		switch (vpad.trigger) {
 		case VPAD_BUTTON_A: {
 			switch (baseIndex) {
@@ -241,19 +241,19 @@ bool menuDrcBase() {
 					while(WHBProcIsRunning()) {
 						if (!startRefresh())
 							continue;
-						
+
 						swrite(0, 3, std::string("--->") + baseOptions[0]);
-							
+
 						write(0, 5, "Change number fast using L Stick LEFT and RIGHT");
 						write(0, 6, "Change one-by-one number using LEFT and RIGHT on DPAD");
-						
+
 						swrite(0, 8, std::string(">Channel: ") + std::to_string(channel));
-						
+
 						if ((vpad.trigger & VPAD_BUTTON_RIGHT || vpad.hold & VPAD_STICK_L_EMULATION_RIGHT))
 							channel++;
 						else if ((vpad.trigger & VPAD_BUTTON_LEFT || vpad.hold & VPAD_STICK_L_EMULATION_LEFT))
 							channel--;
-							
+
 						if (checkReturn())
 							goto loopMenuBase;
 
@@ -266,15 +266,15 @@ bool menuDrcBase() {
 					while(WHBProcIsRunning()) {
 						if (!startRefresh())
 							continue;
-						
+
 						writeDrcBaseInfo(baseIndex, channel);
-						
+
 						result = VPADBASEIsInit();
 						swrite(0, 6, std::string("Result: ") + hex_tostring(result, 2));
-						
+
 						write(0, 8, "0: VPAD BASE Dynamic lib UNLOADED");
 						write(0, 9, "1: VPAD BASE Dynamic lib LOADED");
-						
+
 						if (checkReturn())
 							goto loopMenuBase;
 
@@ -287,12 +287,12 @@ bool menuDrcBase() {
 					while(WHBProcIsRunning()) {
 						if (!startRefresh())
 							continue;
-						
+
 						writeDrcBaseInfo(baseIndex, channel);
-						
+
 						result = VPADBASEGetState(channel);
 						swrite(0, 6, std::string("Result: ") + hex_tostring(result, 8));
-						
+
 						if (checkReturn())
 							goto loopMenuBase;
 
@@ -305,11 +305,11 @@ bool menuDrcBase() {
 					while(WHBProcIsRunning()) {
 						if (!startRefresh())
 							continue;
-						
+
 						writeDrcBaseInfo(baseIndex, channel);
-						
+
 						VPADBASEGetCalibrationData(buffer, channel);
-						
+
 						for (char y = 0; y < 0x05; y++) {
 							for (char x = 0; x < 0x10; x++) {
 								if (y * 16 + x >= 0x44)
@@ -317,7 +317,7 @@ bool menuDrcBase() {
 								swrite(0 + x * 4, 6 + y, hex_tostring0(buffer[y * 16 + x], 2));
 							}
 						}
-						
+
 						if (checkReturn())
 							goto loopMenuBase;
 
@@ -330,13 +330,13 @@ bool menuDrcBase() {
 					while(WHBProcIsRunning()) {
 						if (!startRefresh())
 							continue;
-						
+
 						writeDrcBaseInfo(baseIndex, channel);
-						
+
 						VPADBASEGetGameControllerMode(channel, &mode);
-						
+
 						swrite(0, 6, std::string("Mode: ") + hex_tostring(mode, 8));
-						
+
 						if (checkReturn())
 							goto loopMenuBase;
 
@@ -349,24 +349,24 @@ bool menuDrcBase() {
 					while(WHBProcIsRunning()) {
 						if (!startRefresh())
 							continue;
-						
+
 						writeDrcBaseInfo(baseIndex, channel);
-						
+
 						write(0, 6, "Change number fast using L Stick LEFT and RIGHT");
 						write(0, 7, "Change one-by-one number using LEFT and RIGHT on DPAD");
-						
+
 						swrite(0, 9, std::string(">Mode: ") + hex_tostring(mode, 8));
-						
+
 						if ((vpad.trigger & VPAD_BUTTON_RIGHT || vpad.hold & VPAD_STICK_L_EMULATION_RIGHT))
 							mode++;
 						else if ((vpad.trigger & VPAD_BUTTON_LEFT || vpad.hold & VPAD_STICK_L_EMULATION_LEFT))
 							mode--;
-						
+
 						write(0, 11, "Press A to set value");
-						
+
 						if (vpad.trigger & VPAD_BUTTON_A)
 							VPADBASESetGameControllerMode(channel, mode);
-						
+
 						if (checkReturn())
 							goto loopMenuBase;
 
@@ -379,11 +379,11 @@ bool menuDrcBase() {
 					while(WHBProcIsRunning()) {
 						if (!startRefresh())
 							continue;
-						
+
 						writeDrcBaseInfo(baseIndex, channel);
-						
+
 						VPADBASEGetFactorySetting(buffer, channel);
-						
+
 						for (char y = 0; y < 0x02; y++) {
 							for (char x = 0; x < 0x10; x++) {
 								if (y * 16 + x >= 0x1C)
@@ -391,7 +391,7 @@ bool menuDrcBase() {
 								swrite(0 + x * 4, 6 + y, hex_tostring0(buffer[y * 16 + x], 2));
 							}
 						}
-						
+
 						if (checkReturn())
 							goto loopMenuBase;
 
@@ -402,18 +402,18 @@ bool menuDrcBase() {
 				case 7: { //void VPADBASEGetVolumeOverrideSetting(int channel, char* enabled, char* volume)
 					char enabled = 0;
 					char volume = 0;
-					
+
 					while(WHBProcIsRunning()) {
 						if (!startRefresh())
 							continue;
-						
+
 						writeDrcBaseInfo(baseIndex, channel);
-						
+
 						VPADBASEGetVolumeOverrideSetting(channel, &enabled, &volume);
-						
+
 						swrite(1, 6, std::string("Enabled: ") + hex_tostring(enabled, 2));
 						swrite(1, 7, std::string("Volume: ") + hex_tostring(volume, 2));
-						
+
 						if (checkReturn())
 							goto loopMenuBase;
 
@@ -424,37 +424,37 @@ bool menuDrcBase() {
 				case 8: { //void VPADBASESetVolumeOverrideSetting(int channel, char enabled, char volume)
 					char enabled = 0;
 					char volume = 0;
-					
+
 					bool option2 = false;
 					while(WHBProcIsRunning()) {
 						if (!startRefresh())
 							continue;
-						
+
 						writeDrcBaseInfo(baseIndex, channel);
-						
+
 						write(0, 6, "Change number fast using L Stick LEFT and RIGHT");
 						write(0, 7, "Change one-by-one number using LEFT and RIGHT on DPAD");
 						write(0, 8, "Move cursor between the numbers using UP and DOWN on DPAD");
-						
+
 						swrite(1, 10, std::string("Enabled: ") + hex_tostring(enabled, 2));
 						swrite(1, 11, std::string("Volume: ") + hex_tostring(volume, 2));
-						
+
 						if ((vpad.trigger & VPAD_BUTTON_RIGHT || vpad.hold & VPAD_STICK_L_EMULATION_RIGHT))
 							!option2 ? volume++ : enabled++;
 						else if ((vpad.trigger & VPAD_BUTTON_LEFT || vpad.hold & VPAD_STICK_L_EMULATION_LEFT))
 							!option2 ? volume-- : enabled-- ;
-						
+
 						write(0, 10 + option2, ">");
-						
+
 						if (vpad.trigger & VPAD_BUTTON_UP || vpad.trigger & VPAD_BUTTON_DOWN
 						|| vpad.trigger & VPAD_STICK_L_EMULATION_UP || vpad.trigger & VPAD_STICK_L_EMULATION_DOWN)
 							option2 = !option2;
-						
+
 						write(0, 13, "Press A to set value");
-						
+
 						if (vpad.trigger & VPAD_BUTTON_A)
 							VPADBASESetVolumeOverrideSetting(channel, enabled, volume);
-						
+
 						if (checkReturn())
 							goto loopMenuBase;
 
@@ -467,11 +467,11 @@ bool menuDrcBase() {
 					while(WHBProcIsRunning()) {
 						if (!startRefresh())
 							continue;
-						
+
 						writeDrcBaseInfo(baseIndex, channel);
-						
+
 						write(0, 6, "VPAD BASE Volume override setting sync time initiated successfully");
-						
+
 						if (checkReturn())
 							goto loopMenuBase;
 
@@ -484,12 +484,12 @@ bool menuDrcBase() {
 					while(WHBProcIsRunning()) {
 						if (!startRefresh())
 							continue;
-						
+
 						writeDrcBaseInfo(baseIndex, channel);
-						
+
 						result = VPADBASEGetVolumeOverrideStatus(channel);
 						swrite(0, 6, std::string("Result: ") + hex_tostring(result, 2));
-						
+
 						if (checkReturn())
 							goto loopMenuBase;
 
@@ -502,15 +502,15 @@ bool menuDrcBase() {
 					while(WHBProcIsRunning()) {
 						if (!startRefresh())
 							continue;
-						
+
 						writeDrcBaseInfo(baseIndex, channel);
-						
+
 						result = VPADBASEGetHeadphoneStatus(channel);
 						swrite(0, 6, std::string("Result: ") + hex_tostring(result, 2));
-						
+
 						write(0, 8, "0: VPAD BASE Headphones DISCONNECTED");
 						write(0, 9, "1: VPAD BASE Headphones CONNECTED");
-						
+
 						if (checkReturn())
 							goto loopMenuBase;
 
@@ -539,7 +539,7 @@ bool menuDrcBase() {
 				baseIndex = 0;
 			break;
 		}
-		
+
 		if (checkReturn())
 			return true;
 
@@ -551,19 +551,19 @@ bool menuDrcBase() {
 
 bool menuSensorBar() {
 	bool off = false;
-	
+
 	int result = 999;
 	while(WHBProcIsRunning()) {
 		if (!startRefresh())
 			continue;
-		
+
 		write(1, 4, "Set sensor bar ON (This can be seen with a camera)");
 		write(1, 5, "Set sensor bar OFF");
 		write(0, 4 + off, ">");
-		
+
 		if (result != 999)
 			swrite(1, 7, std::string("Result: ") + std::to_string(result));
-		
+
 		switch (vpad.trigger) {
 		case VPAD_BUTTON_A:
 			result = VPADSetSensorBar (VPAD_CHAN_0, !off);
@@ -575,7 +575,7 @@ bool menuSensorBar() {
 			off = !off;
 			break;
 		}
-			
+
 		if (checkReturn())
 			return true;
 
@@ -593,29 +593,29 @@ static const char* vibrationOptions[]{
 };
 bool menuVibration() {
 	uint8_t vibrationIndex = 0;
-	
+
 	std::vector<uint8_t> pattern;
 	pattern.push_back(0xFF);
 	uint8_t length = 0;
-	
+
 	int result = 999;
 	while(WHBProcIsRunning()) {
 		if (!startRefresh())
 			continue;
-		
+
 		write(0, 4, "Current params: (They stay until you return to main menu)");
 		swrite(2, 5, std::string("+Pattern (Array size): ") + hex_tostring(pattern.size(), 2));
 		swrite(2, 6, std::string("+Length: ") + std::to_string(length));
-							
+
 		for (int i = 0; i < 5; i++) {
 			if (i == vibrationIndex)
 				write(0, i + 8, ">");
 			write(1, i + 8, vibrationOptions[i]);
 		}
-		
+
 		if (result != 999)
 			swrite(0, 14, std::string("Result: ") + std::to_string(result));
-		
+
 		switch (vpad.trigger) {
 		case VPAD_BUTTON_A:
 			switch (vibrationIndex) {
@@ -623,15 +623,15 @@ bool menuVibration() {
 					uint32_t page = 0;
 					uint32_t pages = 0;
 					pages = (pattern.size() - 1) / 16;
-				
+
 					uint8_t patternIndex = 0;
-					
+
 					bool initialF = true;
 					while(WHBProcIsRunning()) {
 						if (!startRefresh())
 							continue;
 						swrite(0, 3, std::string("--->") + vibrationOptions[0]);
-							
+
 						swrite(57 - std::to_string(page).size() - std::to_string(pages).size(), 0, "Page " + std::to_string(page + 1) + "/" + std::to_string(pages + 1));
 						if (pages == 0);
 						else if (page <= 0) {
@@ -647,10 +647,10 @@ bool menuVibration() {
 							write(48, 2, "<< Press ZL/ZR >>");
 						}
 						write(43, 3, "Press X to clear array");
-		
+
 						for (int a = 0; a < 0x10; a++)
 							swrite(a * 4, 5, hex_tostring(a, 1));
-						
+
 						for (int a = 0; a < 0x10; a++) {
 							if (a == patternIndex)
 								write(a * 4, 7, ">");
@@ -672,24 +672,24 @@ bool menuVibration() {
 								result = "--";
 							swrite(1 + a * 4, 7, result);
 						}
-					
+
 						write(0, 8, "_______________________________________________________________");
 						swrite(0, 10, "Pattern array size: " + hex_tostring(pattern.size()) + "   (Max: 0xFF)");
-						
+
 						write(0, 12, "Press A to modify selected element (Between 0x00 and 0xFF)");
 						write(0, 13, "Press DPAD to move around elements");
 						swrite(0, 14, std::string("Press Y to switch initial value (Current: ") + ((initialF) ? std::string("0xFF") : std::string("0x00")) + std::string(")"));
-						
+
 						if (pattern.size() < pattern.max_size())
 							write(0, 16, "Press START to add new element at end");
 						if (pattern.size() > 1)
 							write(0, 17, "Press SELECT to delete element at end");
-						
+
 						switch(vpad.trigger) {
 						case VPAD_BUTTON_A:
 							if (page * 16 + patternIndex > pattern.size())
 								break;
-							
+
 							pattern[page * 16 + patternIndex] = 255 - pattern[page * 16 + patternIndex];
 							break;
 						case VPAD_BUTTON_X:
@@ -743,7 +743,7 @@ bool menuVibration() {
 								page = 0;
 							break;
 						}
-						
+
 						if (checkReturn())
 							goto loopMenuVibration;
 
@@ -755,18 +755,18 @@ bool menuVibration() {
 					while(WHBProcIsRunning()) {
 						if (!startRefresh())
 							continue;
-						
+
 						swrite(0, 3, std::string("--->") + vibrationOptions[1]);
-						
+
 						write(0, 5, "Change number fast using L Stick LEFT and RIGHT");
 						write(0, 6, "Change one-by-one number using LEFT and RIGHT on DPAD");
 						write(0, 7, "+length can be 120 or less");
-						
+
 						swrite(0, 9, std::string(">length: ") + std::to_string(length));
 						swrite(15, 9, std::string("(") + hex_tostring(length, 2) + std::string(")"));
-						
+
 						swrite(0, 11, std::string("Pattern array size: ") + hex_tostring(pattern.size(), 8));
-						
+
 						if ((vpad.trigger & VPAD_BUTTON_RIGHT || vpad.hold & VPAD_STICK_L_EMULATION_RIGHT)) {
 							if (length >= 120)
 								length = 0;
@@ -779,7 +779,7 @@ bool menuVibration() {
 							else
 								length--;
 						}
-						
+
 						if (checkReturn())
 							goto loopMenuVibration;
 
@@ -817,7 +817,7 @@ bool menuVibration() {
 				vibrationIndex = 0;
 			break;
 		}
-		
+
 		if (checkReturn())
 			return true;
 
@@ -1413,7 +1413,7 @@ bool menuGyroAngMag(uint32_t aType) { //Gyro, Angle and Magnetometer
 	bool zA = true;
 
 	uint8_t tIndex = 0; //Toggle index
-	
+
 	if (aType == 1)
 		VPADSetGyroAngle(VPAD_CHAN_0, 0, 0, 0); //Set angle to 0
 
@@ -1479,7 +1479,7 @@ bool menuGyroAngMag(uint32_t aType) { //Gyro, Angle and Magnetometer
 		swrite(0, 4, std::string("[") + std::to_string(max) + std::string("]"));
 
 		write(49, 4, "Press Y to clear");
-			
+
 		drawV3DGraphic(160, 200, axis, max, xA, yA, zA);
 
 		switch (vpad.trigger) {
@@ -1546,15 +1546,15 @@ static const char* screenOptions[]{
 	"Touchscreen test with smooting level 2",
 };
 uint8_t subMenuRainbowSetColor(uint8_t rR, uint8_t gR, uint8_t bR) {
-	
+
 	if (!WHBProcIsRunning() || !startCleanRefresh()) {
 		OSScreenClearBufferEx(SCREEN_TV, 0x0000000);
 		OSScreenClearBufferEx(SCREEN_DRC, 0x00000000);
-			
+
 		endRefresh();
 		return 1;
 	}
-	
+
 	uint32_t RGBRainbowResult;
 
 	RGBRainbowResult = rR * 0x1000000;
@@ -1562,15 +1562,15 @@ uint8_t subMenuRainbowSetColor(uint8_t rR, uint8_t gR, uint8_t bR) {
 	RGBRainbowResult += bR * 0x100;
 	OSScreenClearBufferEx(SCREEN_TV, RGBRainbowResult);
 	OSScreenClearBufferEx(SCREEN_DRC, RGBRainbowResult);
-	
+
 	swrite(0, 0, std::string("R: ") + std::to_string(rR));
 	swrite(0, 1, std::string("G: ") + std::to_string(gR));
 	swrite(0, 2, std::string("B: ") + std::to_string(bR));
-					
+
 	swrite(8, 0, std::string("[") + hex_tostring(rR, 2) + std::string("]"));
 	swrite(8, 1, std::string("[") + hex_tostring(gR, 2) + std::string("]"));
 	swrite(8, 2, std::string("[") + hex_tostring(bR, 2) + std::string("]"));
-					
+
 	if (checkReturn())
 		return 2;
 
@@ -1582,7 +1582,7 @@ bool subMenuRainbow() {
 	uint8_t rR = 255;
 	uint8_t gR = 0;
 	uint8_t bR = 0;
-	
+
 	uint8_t* tempByte = 0;
 
 	bool negative = false;
@@ -1626,7 +1626,7 @@ bool subMenuRainbow() {
 					negative = false;
 				}
 			}
-			
+
 		}
 	}
 }
@@ -1709,55 +1709,55 @@ bool menuScreen() {
 				goto loopMenuScreen;
 			case 1: {
 				uint8_t pixelsIndex = 0;
-				
+
 				uint8_t r = 128;
 				uint8_t g = 128;
 				uint8_t b = 128;
-				
+
 				uint8_t *RGBTemp;
 				uint32_t RGBResult = 0;
 				uint32_t RGBAntiResult = 0;
-				
+
 				while (WHBProcIsRunning()) {
 					if (!startRefresh())
 						continue;
-					
+
 					swrite(0, 3, std::string("--->") + screenOptions[1]);
-					
+
 					write(0, 5, "Input the RGB color to set on screen");
 					write(0, 7, "Move cursor between the numbers using UP and DOWN on DPAD");
 					write(0, 9, "Change number fast using L Stick LEFT and RIGHT");
 					write(0, 10, "Change one-by-one number using LEFT and RIGHT on DPAD");
-					
+
 					swrite(1, 12, std::string("R: ") + std::to_string(r));
 					swrite(1, 13, std::string("G: ") + std::to_string(g));
 					swrite(1, 14, std::string("B: ") + std::to_string(b));
-					
+
 					swrite(9, 12, std::string("[") + hex_tostring(r, 2) + std::string("]"));
 					swrite(9, 13, std::string("[") + hex_tostring(g, 2) + std::string("]"));
 					swrite(9, 14, std::string("[") + hex_tostring(b, 2) + std::string("]"));
-					
+
 					write(0, 12 + pixelsIndex, ">");
-					
+
 					RGBResult = r * 0x1000000;
 					RGBResult += g * 0x10000;
 					RGBResult += b * 0x100;
-					
+
 					RGBAntiResult = (255 - r) * 0x1000000;
 					RGBAntiResult += (255 - g) * 0x10000;
 					RGBAntiResult += (255 - b) * 0x100;
-				
+
 					drawFillRect(255, 320, 328, 393, RGBResult); //Square
 					drawRect(256, 321, 327, 392, RGBAntiResult); //Square shadow
-					
+
 					write(0, 16, "Press A to continue");
-					
+
 					if (vpad.trigger != 0) {
 						if (vpad.trigger & VPAD_BUTTON_UP && pixelsIndex > 0)
 							pixelsIndex--;
 						else if (vpad.trigger & VPAD_BUTTON_DOWN && pixelsIndex < 2)
 							pixelsIndex++;
-						
+
 						switch(pixelsIndex) { //Crash if index is not valid
 							case 0:
 								RGBTemp = &r;
@@ -1770,44 +1770,44 @@ bool menuScreen() {
 								break;
 						}
 					}
-					
+
 					if ((vpad.trigger & VPAD_BUTTON_RIGHT || vpad.hold & VPAD_STICK_L_EMULATION_RIGHT))
 						++(*RGBTemp);
 					else if ((vpad.trigger & VPAD_BUTTON_LEFT || vpad.hold & VPAD_STICK_L_EMULATION_LEFT))
 						--(*RGBTemp);
-					
+
 					if (vpad.trigger & VPAD_BUTTON_A)
 						goto pixelsTest;
-				
+
 					if (checkReturn())
 						goto loopMenuScreen;
 
 					endRefresh();
 				}
 				return false;
-				
+
 				pixelsTest:
 				while (WHBProcIsRunning()) {
-					
+
 					if (!startCleanRefresh()) {
 						OSScreenClearBufferEx(SCREEN_TV, 0x0000000);
 						OSScreenClearBufferEx(SCREEN_DRC, 0x00000000);
-						
+
 						endRefresh();
 						continue;
 					}
-					
+
 					OSScreenClearBufferEx(SCREEN_TV, RGBResult);
 					OSScreenClearBufferEx(SCREEN_DRC, RGBResult);
-					
+
 					swrite(0, 0, std::string("R: ") + std::to_string(r));
 					swrite(0, 1, std::string("G: ") + std::to_string(g));
 					swrite(0, 2, std::string("B: ") + std::to_string(b));
-					
+
 					swrite(8, 0, std::string("[") + hex_tostring(r, 2) + std::string("]"));
 					swrite(8, 1, std::string("[") + hex_tostring(g, 2) + std::string("]"));
 					swrite(8, 2, std::string("[") + hex_tostring(b, 2) + std::string("]"));
-					
+
 					if (checkReturn())
 						goto loopMenuScreen;
 
@@ -1825,7 +1825,7 @@ bool menuScreen() {
 				bool oldFrameTouch = false;
 				VPADTouchData oldFrameData;
 				bool tCursor = true;
-				
+
 				std::vector<VPADTouchData> tPos;
 				while (WHBProcIsRunning())
 				{
@@ -2122,17 +2122,17 @@ int main() {
 			OSDynLoad_Release(base_handle);
 			goto endMenu;
 		case 13: //CREDITS
-			if (!menuCredits()) 
+			if (!menuCredits())
 				goto exit;
 			goto endMenu;
 		}
-		
+
 		write(50, 17, "Press B to exit");
 		write(39, 17, "Press HOME to exit anytime");
 
 		endMenu:
 		menu = 0;
-		
+
 		refreshBuffs:
 		endRefresh();
 	}
