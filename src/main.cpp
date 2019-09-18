@@ -829,7 +829,7 @@ bool menuVibration() {
 
 const char* batteryStatus[]{
 	"Charging",
-	"Unknown", //Low, maybe?
+	"Shut down",
 	"Very low",
 	"Low",
 	"Medium",
